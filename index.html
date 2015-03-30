@@ -1,0 +1,347 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+  <head>
+  <title>ChartArg </title>
+  <meta charset="utf-8"> 
+<!-- CSS Includes --> 
+  <link rel="stylesheet" href="include/bootstrap.css" />
+  <link rel="stylesheet" href="include/colorbox.css" />
+   
+<!-- Jquery Includes -->  
+  <link rel="stylesheet" href="include/jquery-ui.css" />
+  <script type="text/javascript" src="include/jquery-1.9.1.js"></script>
+  <script src="include/jquery-ui-1.10.2.custom.min.js"></script>
+  <script src="include/jquery.colorbox-min.js"></script>
+  
+<!-- Raphael Includes -->
+  <script type="text/javascript" src="include/raphael.js"  ></script>
+  <script type="text/javascript" src="include/g.raphael_custom.js"></script> 
+  <script type="text/javascript" src="include/g.line_custom.js" ></script>
+  
+<!-- Other Includes -->
+  <script type="text/javascript" src="include/date.format.js" ></script>
+  <script type="text/javascript" src="data.js" ></script>
+
+<!-- Initialize iChart drawing -->
+  <script>  
+    $(window).ready(function(){
+      iChart=new uChart(GraphData);
+      iChart.draw();
+    });
+ 
+    /* Redraw chart when the window is resized  */
+    $(window).resize(function(){clearTimeout(t);var t=setTimeout(function(){iChart.draw();},500)});
+
+    /* Function to switch between chart types */ 
+    function convertTo(type,seriesId){
+      var seriesIndex = iChart.getSeriesById(seriesId);
+      iChart.data.Series[seriesIndex].type = type;
+      iChart.draw();    
+    }
+
+  </script>
+
+<!-- Chart JS include -->
+  <script type="text/javascript" src="chart.js"  ></script>
+  <script type="text/javascript" src="polyline.js"  ></script>
+  <script type="text/javascript" src="trading.js" ></script>
+
+  <script>
+  /* Date Picker */
+  $(document).ready(function(){
+  $( "#from" ).datepicker({
+    defaultDate: "+1w",
+    changeMonth: true,
+    changeYear: true,
+    numberOfMonths: 1,
+    onClose: function( selectedDate ) {
+      $( "#to" ).datepicker( "option", "minDate", selectedDate );
+    }
+  });
+  $( "#to" ).datepicker({
+    defaultDate: "+1w",
+    changeMonth: true,
+    changeYear: true,
+    numberOfMonths: 1,
+    onClose: function( selectedDate ) {
+      $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+    }
+  });
+  });
+  
+  /* Draw Range */
+  function drawRange(){
+
+    /* Storing date values from input boxes */
+    var fromDate = document.getElementById("from").value,
+        toDate   = document.getElementById("to").value;
+  
+    /* Removing "/" and converting to arrays ->mm/dd/yyyy */
+    fromDate = fromDate.split("/");
+    toDate = toDate.split("/");
+  
+    /* Convert to epoch time */
+    fromDate = new Date(fromDate[2],fromDate[0]-1,fromDate[1]).getTime();
+    toDate = new Date(toDate[2],toDate[0]-1,toDate[1]).getTime();
+  
+    iChart.datePlot(fromDate,toDate);
+  } 
+
+  </script>
+
+<!-- Technical Indicators -->
+  <script src="ucharttechnical.js"></script>
+  <script>
+  function convert(){
+  var fromDate = document.getElementById("d1").value;
+  fromDate = fromDate.split("/");
+  fromDate = new Date(fromDate[2],fromDate[0]-1,fromDate[1]).getTime();
+  $('#d1').val(fromDate);
+  }
+  
+  function UpdateInfo(){
+     var p  = $('#p1').val();
+     $('#p2').val(p*2);
+     $('#p3').val(p*4);
+  }
+ 
+  function addIndi() {
+
+    $.colorbox({'html':"<div id='addIndi'><h2>Add Indicator</h2><select id='indiSelect'>"+
+                       "<option selected='selected' value='0'>Select Indicator</option>"+
+                         "<option value='tema'>Triple EMA</option>"+
+                         "<option value='dema'>Double EMA</option>"+
+                         "<option value='adx'>ADX</option>"+
+                         "<option value='vortex'>VORTEX</option>"+
+                         "<option value='pvi'>Positive Volume Index</option>"+
+                         "<option value='nvi'>Negative Volume Index</option>"+
+                         "<option value='mi'>Mass Index</option>"+
+                         "<option value='cvo'>Chaikin Volatility Oscillator</option>"+
+                         "<option value='obv'>On Balance Volume</option>"+
+                         "<option value='cmf'>Chaikin Money Flow</option>"+
+                         "<option value='cmo'>Chaikin Momentum Oscillator</option>"+
+                         "<option value='adl'>Accumulation Distribution Line</option>"+
+                         "<option value='pnb'>Prime Numbers Band</option>"+
+                         "<option value='pno'>Prime Numbers Oscillator</option>"+
+                         "<option value='pvt'>Price and Volume Trend</option>"+
+                         "<option value='vhf'>Vertical Horizontal Filter</option>"+
+                         "<option value='wc'>Weighted Close</option>"+
+                         "<option value='tp'>Typical Price</option>"+
+                         "<option value='wgtma'>Weighted Moving Average</option>"+
+                         "<option value='wadt'>Williams Accumulation Distribution</option>"+
+                         "<option value='wad'>Williams Accumulate Distribute</option>"+
+                         "<option value='pi'>Performance Indicator</option>"+
+                         "<option value='bo%b'>Bollinger %B</option>"+
+                         "<option value='mae'>MAE</option>"+
+                         "<option value='sd'>Standard Deviation</option>"+
+                         "<option value='uo'>Ulimate Oscillator</option>"+
+                         "<option value='atr_ema'>ATR_EMA</option>"+
+                         "<option value='atr_wma'>ATR_WMA</option>"+
+                         "<option value='emav'>EMA-Volume</option>"+
+                         "<option value='wmav'>Wilder MA-Volume</option>"+
+                         "<option value='wma'>WMA-Price</option>"+
+                         "<option value='eom'>EOM</option>"+
+                         "<option value='vo'>VO</option>"+
+                         "<option value='po'>PO</option>"+
+                         "<option value='pvo'>PVO</option>"+
+                         "<option value='ppo'>PPO</option>"+
+                         "<option value='mo'>MO</option>"+
+                         "<option value='mp'>MP</option>"+
+                         "<option value='fi'>FI</option>"+
+                         "<option value='hml'>HML</option>"+
+                         "<option value='sma'>SMA-Price</option>"+
+                         "<option value='vma'>SMA-Volume</option>"+
+                         "<option value='ema'>EMA-Price</option>"+
+                         "<option value='bobands'>BoBands</option>"+
+                         "<option value='macd'>MACD</option>"+
+                         "<option value='atr_sma'>ATR_SMA</option>"+
+                         "<option value='fso'>FSO</option>"+
+                         "<option value='sso'>SSO</option>"+
+                         "<option value='kdj'>KDJ</option>"+
+                         "<option value='wr'>WR</option>"+
+                         "<option value='cci'>CCI</option>"+
+                         "<option value='rocv'>ROC-Volume</option>"+
+                         "<option value='roc'>ROC-Price</option>"+
+                         "<option value='trix'>TRIX</option>"+
+                         "<option value='rsi'>RSI</option>"+
+                         "<option value='mfi'>MFI</option></select><br/>"+
+                       "<div id='inputBoxes'></div><a class='btn' onclick='drawIndi();'>OK</a></div>"});
+
+   $("#indiSelect").change(function(){
+
+     var indiType = $("#indiSelect").val();
+     $("#inputBoxes").html("");
+
+     switch(indiType){    
+      case "macd": case "sso": case "ppo": case "pvo":
+       $("#inputBoxes").append($("<span>Period1: <input type='text' value='10' id='p1'/></span>"));
+       $("#inputBoxes").append($("<span>Period2: <input type='text' value='20' id='p2'/></span>"));
+       $("#inputBoxes").append($("<span>SPeriod: <input type='text' value='4' id='Sp'/></span>")); 
+       break;
+
+      case "uo": 
+       $("#inputBoxes").append($("<span>Period1: <input type='text' value='7' onchange='UpdateInfo();' id='p1'/></span>"));
+       $("#inputBoxes").append($("<span>Period2: <input type='text' value="+$("#p1").val()*2+" id='p2' readonly/></span>"));
+       $("#inputBoxes").append($("<span>Period3: <input type='text' value="+$("#p1").val()*4+" id='p3'readonly/></span>"));
+       break;
+
+      case "kdj": case "fso": case "trix":
+       $("#inputBoxes").append($("<span>Period1: <input type='text' value='10' id='p1'/></span>"));
+       $("#inputBoxes").append($("<span>SPeriod: <input type='text' value='4' id='Sp'/></span>")); 
+      break;
+    
+      case "po": case "vo": case "mi":
+       $("#inputBoxes").append($("<span>Period1: <input type='text' value='10' id='p1'/></span>"));
+       $("#inputBoxes").append($("<span>Period2: <input type='text' value='20' id='p2'/></span>")); 
+      break;
+           
+      case "cmo": 
+       $("#inputBoxes").append($("<span>Short Period: <input type='text' value='10' id='p1'/></span>"));
+       $("#inputBoxes").append($("<span>Long Period: <input type='text' value='20' id='p2'/></span>")); 
+       $("#inputBoxes").append($("<span>Date: <input type='text' id='d1' placeholder='mm/dd/yyyy' onchange='convert();'/></span>"));
+      break;
+
+      case "pi": case "wad": case "wadt": case "pvt": case "adl": case "obv": case "nvi":
+      case "pvi":
+       $("#inputBoxes").append($("<span>Date: <input type='text' id='d1' placeholder='mm/dd/yyyy' onchange='convert();'/></span>"));
+      break;
+ 
+      case "bobands": case "bo%b":
+       $("#inputBoxes").append($("<span>Period1: <input type='text' value='10' id='p1'/></span>"));
+       $("#inputBoxes").append($("<span>Multiplier: <input type='text' value='2' id='Mu'/></span>"));
+      break;
+    
+      case "mae":
+       $("#inputBoxes").append($("<span>Period1: <input type='text' value='10' id='p1'/></span>"));
+       $("#inputBoxes").append($("<span>Percentage: <input type='text' value='2.5' id='perctg'/></span>"));
+      break;
+
+      case "fi" : case "sma": case "vma": case "ema": case "atr_sma": case "wr": case "atr_wma":
+      case "cci": case "roc": case "rsi": case "mfi": case "eom": case "wma": case "emav": case "wmav":
+      case "atr_ema": case "sd": case "rocv": case "wgtma": case "vhf": case "cmf": case "cvo":
+      case "vortex": case "adx": case "dema": case "tema":
+       $("#inputBoxes").append($("<span>Period1: <input type='text' value='10' id='p1'/></span>"));
+      break;
+
+      default:
+      break;
+   
+     }
+     $.colorbox.resize(); 
+
+    })
+  }
+
+  function drawIndi(){ 
+
+    var s=iChart.seriesById("priceseries"),
+        series = iChart.seriesById("priceseries");
+    var drawindicator = $("#addIndi Select").val();
+    if(drawindicator == "vma"){s=iChart.seriesById("volumeseries");drawindicator='sma';}
+    if(drawindicator == "emav"){s=iChart.seriesById("volumeseries");drawindicator='ema';}
+    if(drawindicator == "wmav"){s=iChart.seriesById("volumeseries");drawindicator='wma';}
+
+    /* Draw Indicator Now */
+    var myset = s[drawindicator].apply(s,$("#addIndi input[type='text']").map(function(i,j){return $(j).val()*1}));
+    if(myset != 0){   
+     /* Add remove button */
+     var removebutton = $("<a href='#' class='btn btn-mini'></a>");
+     removebutton.html($("#addIndi Select").val());
+     $("#tech_indi").append(removebutton);
+
+     removebutton.click(function(){
+       var paddingSet = { "top":2, "paddingTop":3};
+       iChart.removeSet(myset);
+       iChart.xAxisById(series.xaxis).collateYaxis(paddingSet);   
+       removebutton.remove(); 
+       iChart.draw();
+     });
+
+     iChart.draw();     
+    }  
+   $.colorbox.close();
+  } 
+
+  var customFlag = false;
+  function customDraw(){
+    if(customFlag == false){ 
+      iChart.initPolyline(); 
+      customFlag = true;
+    }
+    else{
+     iChart.drawPolyline();
+     customFlag = false;
+    }  
+  }
+
+  </script>
+
+  <style type="text/css">
+    
+  #divID{
+  width : 100%;
+  height: 90%;    
+  }
+  
+  #wrapper{
+  width : 100%;
+  height: 100%;
+  }
+   
+  body{
+  width : 100%;
+  height: 100%;
+  }
+   
+  html{
+  width : 100%;
+  height: 100%;
+  }
+   
+  </style>
+  
+  </head>
+
+
+  <body>
+  <center>
+  CHART TYPE:
+  <div class="btn-group">
+  <button class="btn btn-mini" onclick=convertTo('line','priceseries');> Line  </button>
+  <button class="btn btn-mini" onclick=convertTo('area','priceseries');> Area  </button>
+  <button class="btn btn-mini" onclick=convertTo('candle','priceseries');>Candle  </button>
+  <button class="btn btn-mini" onclick=convertTo('ohlc','priceseries');> OHLC  </button>
+  </div>
+  
+  
+  <!-- ZOOM BUTTONS TYPES -->
+  ZOOM :
+  <!-- Passing latest date and the date specified time ago -->
+  <!-- /// series.get_by_id('priceSeries') -->  
+  
+  <div class="btn-group" >
+  <button class="btn btn-mini" onclick=iChart.datePlotButtons("5D");> 5D</button>
+  <button class="btn btn-mini" onclick=iChart.datePlotButtons("1M");> 1M</button>
+  <button class="btn btn-mini" onclick=iChart.datePlotButtons("3M");> 3M</button>
+  <button class="btn btn-mini" onclick=iChart.datePlotButtons("6M");> 6M</button>
+  <button class="btn btn-mini" onclick=iChart.datePlotButtons("YTD");>YTD</button>  
+  <button class="btn btn-mini" onclick=iChart.datePlotButtons("ALL");>ALL</button>  
+  </div>
+  
+  <!-- Date range selector -->
+  From
+  <input type="text" id="from" name="from" />
+  To
+  <input type="text" id="to" name="to" />
+  <button class="btn btn-mini" onclick=drawRange();> Draw </button>
+  <button class="btn btn-mini" onclick=customDraw();>Custom Drawing </button>
+  </center>  
+  <div id="tech_indi">
+   <input type="button" value="Add Indicator" onclick="addIndi()"/>
+  </div>
+
+  <div id="divID"></div>
+  
+  </body>
+
+</html>
